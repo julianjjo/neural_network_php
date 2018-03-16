@@ -102,6 +102,7 @@ function getMovimientoPlayerHuman($game = [], $posicion)
     $mapPoscion = array('0,0' => 0, '1,0' => 1, '2,0' => 2,
                         '0,1' => 3, '1,1' => 4, '2,1' => 5,
                         '0,2' => 6, '1,2' => 7, '2,2' => 8);
+                        
     if($game[$mapPoscion[$posicion]] == 0){
         $game[$mapPoscion[$posicion]] = -1;
         return $game;

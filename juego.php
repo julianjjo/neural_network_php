@@ -2,17 +2,23 @@
 require "triquiUtils.php";
 
 $ann = fann_create_from_file ("triqui.nt");
-
+$game = [0,0,0,0,0,0,0,0,0];
+$json = json_encode($game);
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $posicion = $_POST["posicion"];
     $game = json_decode($_POST["game"]);
-    print_r($game);
     $game = getMovimientoPlayerHuman($game, $posicion);
-    print_r($game);
-    if($game !== false){
-        $movement = fann_run($ann, $seleccion);
-        $movement = getMovimiento($movement);
+    if(is_array($game)){
+        $movement = fann_run($ann, $game);
+        print_r($movement);
+        if(getMovimiento($movement) !== false){
+            $movement = getMovimiento($movement);
+        } else {
+            $movement = movimientoIaAleatorio($game, [0,0,0,0,0,0,0,0,0], $player = 1);
+        }
         $game = guardarMovimiento($game, $movement);
+        $json = json_encode($game);
+        print_r($game);
         if(esGanador($game) === true){
             $resultado = "GANO IA";
             $game = [0,0,0,0,0,0,0,0,0];
@@ -27,9 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     else{
         $noPermitido = "Esa espacio no esta vacio";
     }
-} else {
-    $game = [0,0,0,0,0,0,0,0,0];
-    $json = json_encode($game);
 }
 ?>
 <!DOCTYPE html>
@@ -57,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             display: block;
             margin-top: 100%;
         }
-        #O::after.o {
+        #O::after {
             content: 'O';
             display: block;
             margin-top: 100%;
@@ -153,3 +156,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </table>
     </body>
 </html>
+
+<?php fann_destroy($ann); ?>

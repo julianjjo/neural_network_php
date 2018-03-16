@@ -1,15 +1,15 @@
 <?php
 require "triquiUtils.php";
-
+ini_set('max_execution_time', 300);
 $num_input = 9;
 $num_output = 9;
-$num_layers = 4;
-$num_neurons_hidden = 9;
+$num_layers = 3;
+$num_neurons_hidden = 12;
 
 $ann = fann_create_standard($num_layers, $num_input, $num_neurons_hidden, $num_output);
 $score = array();
 
-for ($jugadas=0; $jugadas < 10000; $jugadas++) {
+for ($jugadas=0; $jugadas < 10; $jugadas++) {
     $juego = true;
     $juegoSave = [];
     $game = [0,0,0,0,0,0,0,0,0];
@@ -27,14 +27,14 @@ for ($jugadas=0; $jugadas < 10000; $jugadas++) {
         if(esGanador($game) === true){
             $juego = false;
             $score["gano"]++;
-            foreach ($juegoSave as $jugada) {
-                fann_train($ann, $jugada['game'], $jugada['movement']);
+            foreach ($juegoSave as $value) {
+                fann_train($ann, $value['game'], $value['movement']);
             }
         } elseif (esEmpate($game) === true) {
             $juego = false;
             $score["empato"]++;
-            foreach ($juegoSave as $jugada) {
-                fann_train($ann, $jugada['game'], $jugada['movement']);
+            foreach ($juegoSave as $value) {
+                fann_train($ann, $value['game'], $value['movement']);
             }
         } elseif (esGanador($game, $player = -1) === true) {
             $score["perdio"]++;
@@ -42,6 +42,8 @@ for ($jugadas=0; $jugadas < 10000; $jugadas++) {
         }
     }
 }
+
+print_r($score);
 
 fann_save($ann,"triqui.nt");
 
