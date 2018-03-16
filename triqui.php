@@ -1,15 +1,14 @@
 <?php
 require "triquiUtils.php";
 ini_set('max_execution_time', 300);
-$num_input = 9;
-$num_output = 9;
-$num_layers = 3;
-$num_neurons_hidden = 12;
+error_reporting(E_ERROR | E_PARSE);
 
-$ann = fann_create_standard($num_layers, $num_input, $num_neurons_hidden, $num_output);
+$num_layers = 6;
+
+$ann = fann_create_standard_array ( $num_layers , $layers = [9,9,9,9,9,9]);
 $score = array();
 
-for ($jugadas=0; $jugadas < 10; $jugadas++) {
+for ($jugadas=0; $jugadas < 120000; $jugadas++) {
     $juego = true;
     $juegoSave = [];
     $game = [0,0,0,0,0,0,0,0,0];
@@ -17,6 +16,7 @@ for ($jugadas=0; $jugadas < 10; $jugadas++) {
         $game = movimientoAleatorio($game);
         $movement = fann_run($ann, $game);
         if(getMovimiento($movement) !== false){
+            $score["movimientoIA"]++;
             $movement = getMovimiento($movement);
         } else {
             $movement = movimientoIaAleatorio($game, [0,0,0,0,0,0,0,0,0], $player = 1);
