@@ -1,7 +1,9 @@
 <?php
 require __DIR__ . '/../triquiUtils.php';
 
-class TriquiTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class TriquiTest extends TestCase
 {
     public function testValidateVerticalTrue()
     {
@@ -75,19 +77,19 @@ class TriquiTest extends PHPUnit_Framework_TestCase
 
     public function testGetMovimiento()
     {
-        $result = getMovimiento([0.5984, 0, 0.98574, 0, 0.32544, 0, 0, 0, 0]);
-        $this->assertEquals([0,0,1,0,0,0,0,0,0], $result, "La cantidad deberia dar 2");
+        $result = getMovimiento([1, -1, 1, -1, 0, 0, 0, 0, 0], [0.5984, 0, 0, 0, 0.32544, 0, 0, 0.98574, 0]);
+        $this->assertEquals([0,0,0,0,0,0,0,1,0], $result, "Deberia devolver un movimiento");
     }
 
     public function testGetMovimientoTwoValues()
     {
-        $result = getMovimiento([0.9984, 0, 0.98574, 0, 0.32544, 0, 0, 0, 0]);
-        $this->assertEquals([1,0,0,0,0,0,0,0,0], $result, "La cantidad deberia dar 2");
+        $result = getMovimiento([1, -1, 1, -1, 0, 0, 0, 0, 0], [0.9984, 0, 0, 0, 0.32544, 0, 0, 0.98574, 0]);
+        $this->assertEquals([0,0,0,0,0,0,0,1,0], $result, "Deberia devolver un movimiento");
     }
 
     public function testGetMovimientoFalse()
     {
-        $result = getMovimiento([0.6984, 0, 0.58574, 0, 0.32544, 0, 0, 0, 0]);
+        $result = getMovimiento([1, -1, 1, -1, 0, 0, 0, 0, 0], [0.6984, 0, 0.58574, 0, 0.32544, 0, 0, 0, 0]);
         $this->assertFalse($result, "El resultado deberia ser falso");
     }
 
@@ -117,7 +119,13 @@ class TriquiTest extends PHPUnit_Framework_TestCase
 
     public function testEsEmpate()
     {
-        $result = esEmpate([-1, 1, -1, -1, 1, -1, 1, -1, 0]);
+        $result = esEmpate([-1, 1, -1, -1, 1, -1, 1, -1, 1]);
         $this->assertTrue($result, "El resultado deberia ser true");
+    }
+
+    public function testEsEmpateFalse()
+    {
+        $result = esEmpate([0, 0, 0, 0, 0, 0, 0, 0, 0]);
+        $this->assertFalse($result, "El resultado deberia ser true");
     }
 }

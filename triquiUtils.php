@@ -4,16 +4,17 @@ function guardarMovimiento($game = [], $movement = [])
 {
     $key = array_search(1, $movement);
     $game[$key] = $movement[$key];
+    $game = array_map('intval',$game);
     return $game;
 }
 
 function movimientoAleatorio($game = [], $player = -1)
 {
-    $keyRand = array_rand($game, 7);
-
-    foreach ($keyRand as $key) {
-        if ($game[$key] == 0) {
-            $game[$key] = $player;
+    while(true) {
+        $keyRandReal = mt_rand(0,8);
+        if ($game[$keyRandReal] == 0) {
+            $game[$keyRandReal] = $player;
+            $game = array_map('intval',$game);
             return $game;
         }
     }
@@ -22,11 +23,10 @@ function movimientoAleatorio($game = [], $player = -1)
 
 function movimientoIaAleatorio($game = [], $movement, $player = -1)
 {
-    $keyRand = array_rand($game, 7);
-    foreach ($keyRand as $key) {
-
-        if ($game[$key] == 0) {
-            $movement[$key] = $player;
+    while(true) {
+        $keyRandReal = mt_rand(0,8);
+        if ($game[$keyRandReal] == 0) {
+            $movement[$keyRandReal] = $player;
             return $movement;
         }
     }
@@ -35,15 +35,18 @@ function movimientoIaAleatorio($game = [], $movement, $player = -1)
 
 function esEmpate($game = [])
 {
-    $result = array_count_values($game);
-    if (isset($result[0]) && $result[0] == 1) {
-        return true;
+    $game = array_map('intval',$game);
+    foreach ($game as $value) {
+        if($value == 0){
+            return false;
+        }
     }
-    return false;
+    return true;
 }
 
 function esGanador($game = [], $player = 1)
 {
+    $game = array_map('intval',$game);
     if (validateVertical($game, $player)) {
         return true;
     } elseif (validateHorizontal($game, $player)) {
@@ -85,13 +88,16 @@ function validateDiagonales($game = [], $player = 1)
     return false;
 }
 
-function getMovimiento($movement = [])
+function getMovimiento($game = [], $movement = [])
 {
+    $game = array_map('intval',$game);
     $movementReal = [0, 0, 0, 0, 0, 0, 0, 0, 0];
     foreach ($movement as $key => $value) {
         if ($value >= 0.8) {
-            $movementReal[$key] = 1;
-            return $movementReal;
+            if ($game[$key] == 0) {
+                $movementReal[$key] = 1;
+                return $movementReal;
+            }
         }
     }
     return false;
@@ -103,8 +109,9 @@ function getMovimientoPlayerHuman($game = [], $posicion)
                         '0,1' => 3, '1,1' => 4, '2,1' => 5,
                         '0,2' => 6, '1,2' => 7, '2,2' => 8);
 
-    if($game[$mapPoscion[$posicion]] == 0){
+    if($game[$mapPoscion[$posicion]] === 0){
         $game[$mapPoscion[$posicion]] = -1;
+        $game = array_map('intval',$game);
         return $game;
     }
     return false;

@@ -1,15 +1,34 @@
 <?php
 require "triquiUtils.php";
 
-$ann = fann_create_from_file ("triqui.nt");
+$ann = fann_create_from_file ("triqui.net");
 $game = [0,0,0,0,0,0,0,0,0];
 $json = json_encode($game);
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $posicion = $_POST["posicion"];
     $game = json_decode($_POST["game"]);
+    if($_POST["reset"] == "true"){
+        $game = [0,0,0,0,0,0,0,0,0];
+    }
     $game = getMovimientoPlayerHuman($game, $posicion);
-    if(is_array($game)){
+    if($game === false){
+        $game = json_decode($_POST["game"]);
+        $resultado = "Movimiento Repetido";
+        goto fin;
+    }
+    if(esGanador($game) === true){
+        $resultado = "GANO IA";
+        goto fin;
+    } elseif (esGanador($game, $player = -1) === true) {
+        $resultado = "GANO HUMANO";
+        goto fin;
+    } elseif (esEmpate($game) === true) {
+        $resultado = "ES UN EMPATE";
+        goto fin;
+    }
+    if(is_array($game) && $game != [0,0,0,0,0,0,0,0,0]){
         $movement = fann_run($ann, $game);
+        print_r($game);
         print_r($movement);
         if(getMovimiento($movement) !== false){
             $movement = getMovimiento($movement);
@@ -17,23 +36,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $movement = movimientoIaAleatorio($game, [0,0,0,0,0,0,0,0,0], $player = 1);
         }
         $game = guardarMovimiento($game, $movement);
-        $json = json_encode($game);
-        print_r($game);
         if(esGanador($game) === true){
             $resultado = "GANO IA";
-            $game = [0,0,0,0,0,0,0,0,0];
+            goto fin;
+        } elseif (esGanador($game, $player = -1) === true) {
+            $resultado = "GANO HUMANO";
+            goto fin;
         } elseif (esEmpate($game) === true) {
             $resultado = "ES UN EMPATE";
-            $game = [0,0,0,0,0,0,0,0,0];
-        } elseif (esGanador($game, $player = -1) === true) {
-            $resultado = "PERDIO";
-            $game = [0,0,0,0,0,0,0,0,0];
+            goto fin;
         }
+        $json = json_encode($game);
     }
     else{
         $noPermitido = "Esa espacio no esta vacio";
     }
 }
+fin:
 ?>
 <!DOCTYPE html>
 <html>
@@ -95,6 +114,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form class="" action="#" method="post">
             Posición: <input type="text" name="posicion" placeholder="0,1">
             <input type="hidden" name="game" value="<?php echo $json ?>">
+            Reset: <select name="reset">
+                <option value="false" selected>No</option>
+                <option value="true">Si</option>
+            </select>
             <button type="submit" name="button">Jugar</button>
         </form>
         <?php if (isset($noPermitido)): ?>
