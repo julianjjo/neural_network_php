@@ -30,8 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $movement = fann_run($ann, $game);
         print_r($game);
         print_r($movement);
-        if(getMovimiento($movement) !== false){
-            $movement = getMovimiento($movement);
+        if(getMovimiento($game, $movement) !== false){
+            $movement = getMovimiento($game, $movement);
         } else {
             $movement = movimientoIaAleatorio($game, [0,0,0,0,0,0,0,0,0], $player = 1);
         }

@@ -93,7 +93,7 @@ function getMovimiento($game = [], $movement = [])
     $game = array_map('intval',$game);
     $movementReal = [0, 0, 0, 0, 0, 0, 0, 0, 0];
     foreach ($movement as $key => $value) {
-        if ($value >= 0.8) {
+        if ($value >= 0.9) {
             if ($game[$key] == 0) {
                 $movementReal[$key] = 1;
                 return $movementReal;

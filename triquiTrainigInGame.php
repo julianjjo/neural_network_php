@@ -3,10 +3,10 @@ require "triquiUtils.php";
 error_reporting(E_ERROR | E_PARSE);
 
 $score = array();
-$num_layers = 3;
-$ann = fann_create_standard_array ($num_layers , $layers = [9,9,9]);
+$num_layers = 4;
+$ann = fann_create_standard_array ($num_layers , $layers = [9,9,9,9]);
 
-for ($jugadas=0; $jugadas < 100; $jugadas++) {
+for ($jugadas=0; $jugadas < 90000000; $jugadas++) {
     $juego = true;
     $juegoSave = [];
     $game = [0,0,0,0,0,0,0,0,0];
@@ -27,8 +27,8 @@ for ($jugadas=0; $jugadas < 100; $jugadas++) {
         }
         $movement = fann_run($ann, $game);
         if(getMovimiento($game, $movement) !== false){
-            echo "movimiento IA \n";
-            $movement = getMovimiento($movement);
+            $movement = getMovimiento($game, $movement);
+            $score["ia_movement"]++;
         } else {
             $movement = movimientoIaAleatorio($game, [0,0,0,0,0,0,0,0,0], $player = 1);
         }
@@ -51,6 +51,9 @@ for ($jugadas=0; $jugadas < 100; $jugadas++) {
         } elseif (esEmpate($game) === true) {
             $juego = false;
             $score["empato"]++;
+            foreach ($juegoSave as $scenario) {
+                fann_train($ann, $scenario['game'],$scenario['movement']);
+            }
             continue;
         }
     }
