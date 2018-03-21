@@ -6,49 +6,51 @@ $score = array();
 $num_layers = 3;
 $ann = fann_create_standard_array ($num_layers , $layers = [9,9,9]);
 
-for ($jugadas=0; $jugadas < 100; $jugadas++) {
+for ($jugadas=0; $jugadas < 1000; $jugadas++) {
     $juego = true;
     $juegoSave = [];
-    $game = [0,0,0,0,0,0,0,0,0];
+    $board = [0,0,0,0,0,0,0,0,0];
     while($juego){
-        $game = movimientoAleatorio($game);
-        if(esGanador($game) === true){
+        $board = movimientoAleatorio($board, $player = -1);
+        if(esGanador($board) === true){
             $juego = false;
             $score["gano"]++;
             continue;
-        } elseif(esGanador($game, $player = -1) === true){
+        } elseif(esGanador($board, $player = -1) === true){
             $juego = false;
             $score["perdio"]++;
             continue;
-        } elseif (esEmpate($game) === true) {
+        } elseif (esEmpate($board) === true) {
             $juego = false;
             $score["empato"]++;
             continue;
         }
-        $movement = fann_run($ann, $game);
-        if(getMovimiento($game, $movement) !== false){
+        $movement = fann_run($ann, $board);
+        if(getMovimiento($board, $movement) !== false){
             echo "movimiento IA \n";
             $movement = getMovimiento($movement);
         } else {
-            $movement = movimientoIaAleatorio($game, [0,0,0,0,0,0,0,0,0], $player = 1);
+            $movementIndex = minimax($board, $player = 1);
+            $movement = [0,0,0,0,0,0,0,0,0];
+            $movement[$movementIndex["index"]] = 1;
         }
-        $game = array_map('intval',$game);
-        $jugada = array('game' => $game, 'movement' => $movement);
+        $board = array_map('intval',$board);
+        $jugada = array('board' => $board, 'movement' => $movement);
         $juegoSave[] = $jugada;
-        $game = guardarMovimiento($game, $movement);
-        $game = array_map('intval',$game);
-        if(esGanador($game) === true){
+        $board = guardarMovimiento($board, $movement);
+        $board = array_map('intval',$board);
+        if(esGanador($board) === true){
             $juego = false;
             $score["gano"]++;
             foreach ($juegoSave as $scenario) {
-                fann_train($ann, $scenario['game'],$scenario['movement']);
+                fann_train($ann, $scenario['board'],$scenario['movement']);
             }
             continue;
-        } elseif(esGanador($game, $player = -1) === true){
+        } elseif(esGanador($board, $player = -1) === true){
             $juego = false;
             $score["perdio"]++;
             continue;
-        } elseif (esEmpate($game) === true) {
+        } elseif (esEmpate($board) === true) {
             $juego = false;
             $score["empato"]++;
             continue;
