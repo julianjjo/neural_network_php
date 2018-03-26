@@ -8,7 +8,7 @@ $grid[] = ["v", "f", "v", "f", "v"];
 $grid[] = ["v", "v", "v", "v", "v"];
 $grid[] = ["f", "f", "v", "f", "v"];
 $grid[] = ["v", "v", "v", "v", "v"];
-$grid[] = ["v", "v", "v", "v", "v"];
+$grid[] = ["v", "v", "f", "v", "v"];
 $grid[] = ["v", "v", "v", "T", "v"];
 $initalGrid = $grid;
 $fichero = file_get_contents('./QLearningIA.json', true);
@@ -28,7 +28,7 @@ for ($i = 0; $i < $max_episodio_estados; $i++) {
     $estado = $values["nuevo_estado"];
     system("clear");
     printGrid($grid);
-    sleep(1);
+    usleep(100000);
     if ($values["done"]) {
         break;
     }
