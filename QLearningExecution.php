@@ -3,9 +3,9 @@ require 'QLearningUtils.php';
 
 $acciones = ["atras", "adelante", "arriba", "abajo"];
 $max_episodio_estados = 40;
-$grid[] = ["j", "v", "v", "v", "v"];
-$grid[] = ["v", "f", "v", "v", "f"];
-$grid[] = ["v", "v", "v", "v", "f"];
+$grid[] = ["j", "f", "v", "v", "v"];
+$grid[] = ["v", "f", "v", "f", "v"];
+$grid[] = ["v", "v", "v", "v", "v"];
 $grid[] = ["f", "f", "v", "f", "v"];
 $grid[] = ["v", "v", "v", "v", "v"];
 $grid[] = ["v", "v", "v", "v", "v"];

@@ -2,22 +2,24 @@
 require 'QLearningUtils.php';
 
 $acciones = ["atras", "adelante", "arriba", "abajo"];
-$learningRate = 0.1;
+$minLearningRate = 0.1;
+$maxLearningRate = 1.0;
 $factorDescuento = 0.8;
-$episodios = 5000;
+$episodios = 10;
 $max_episodio_estados = 20;
-$grid[] = ["j", "v", "v", "v", "v"];
-$grid[] = ["v", "f", "v", "v", "f"];
-$grid[] = ["v", "v", "v", "v", "f"];
+$grid[] = ["j", "f", "v", "v", "v"];
+$grid[] = ["v", "f", "v", "f", "v"];
+$grid[] = ["v", "v", "v", "v", "v"];
 $grid[] = ["f", "f", "v", "f", "v"];
 $grid[] = ["v", "v", "v", "v", "v"];
 $grid[] = ["v", "v", "v", "v", "v"];
 $grid[] = ["v", "v", "v", "T", "v"];
 $initalGrid = $grid;
-srand (250);
+srand(250);
 
+$learningRate = linspace($minLearningRate, $maxLearningRate, $episodios);
 $table = getTable($grid, $acciones);
-$maxRecompensa = 0;
+$maxRecompensa = -3000;
 
 for ($episodio = 0; $episodio < $episodios; $episodio++) {
     $grid = $initalGrid;
@@ -30,8 +32,8 @@ for ($episodio = 0; $episodio < $episodios; $episodio++) {
         $siguienteRecompenzaMixta = maxRefuerzo($table, $grid, $values["nuevo_estado"]);
         if ($values["done"]) {
             $table[$estado["y"]][$estado["x"]][$action] = $values["recompensa"];
-        } else{
-            $table[$estado["y"]][$estado["x"]][$action] += $learningRate * ($values["recompensa"] + $factorDescuento * $siguienteRecompenzaMixta - $table[$estado["y"]][$estado["x"]][$action]);
+        } else {
+            $table[$estado["y"]][$estado["x"]][$action] += $learningRate[$episodio] * ($values["recompensa"] + $factorDescuento * $siguienteRecompenzaMixta - $table[$estado["y"]][$estado["x"]][$action]);
         }
         $grid = $values["nueva_grilla"];
         $estado = $values["nuevo_estado"];
@@ -40,12 +42,14 @@ for ($episodio = 0; $episodio < $episodios; $episodio++) {
             break;
         }
     }
-    system("clear");
     echo "Episodio: $episodio Recompensa: $recompensaEpisodio \n";
+    system("clear");
     if ($maxRecompensa < $recompensaEpisodio) {
         $maxRecompensa = $recompensaEpisodio;
     }
 }
+echo "Factor de descuento final: $factorDescuento \n";
+echo "Recompensa Maxima: $maxRecompensa \n";
 $fp = fopen('QLearningIA.json', 'w');
 fwrite($fp, json_encode($table));
 fclose($fp);

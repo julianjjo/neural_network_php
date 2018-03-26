@@ -25,7 +25,7 @@ function getRecompensa($grid = [], $estado = [], $accion = 0)
             $reward = -150;
         } elseif ($accion == 0 && $grid[$estado["y"]][$estado["x"] - 1] == "v") {
             $reward = -1;
-        }  elseif ($accion == 0 && $grid[$estado["y"]][$estado["x"] - 1] == "f") {
+        } elseif ($accion == 0 && $grid[$estado["y"]][$estado["x"] - 1] == "f") {
             $reward = -100;
         }
     }
@@ -34,7 +34,7 @@ function getRecompensa($grid = [], $estado = [], $accion = 0)
             $reward = 100;
         } elseif ($accion == 1 && $grid[$estado["y"]][$estado["x"] + 1] == "v") {
             $reward = -1;
-        }  elseif ($accion == 1 && $grid[$estado["y"]][$estado["x"] + 1] == "f") {
+        } elseif ($accion == 1 && $grid[$estado["y"]][$estado["x"] + 1] == "f") {
             $reward = -100;
         }
     }
@@ -45,7 +45,7 @@ function getRecompensa($grid = [], $estado = [], $accion = 0)
             $reward = -150;
         } elseif ($accion == 2 && $grid[$estado["y"] - 1][$estado["x"]] == "v") {
             $reward = -1;
-        }  elseif ($accion == 2 && $grid[$estado["y"] - 1][$estado["x"]]== "f") {
+        } elseif ($accion == 2 && $grid[$estado["y"] - 1][$estado["x"]] == "f") {
             $reward = -100;
         }
     }
@@ -55,7 +55,7 @@ function getRecompensa($grid = [], $estado = [], $accion = 0)
             $reward = 100;
         } elseif ($accion == 3 && $grid[$estado["y"] + 1][$estado["x"]] == "v") {
             $reward = -1;
-        }  elseif ($accion == 3 && $grid[$estado["y"] + 1][$estado["x"]] == "f") {
+        } elseif ($accion == 3 && $grid[$estado["y"] + 1][$estado["x"]] == "f") {
             $reward = -100;
         }
     }
@@ -164,8 +164,8 @@ function actuar($grid = [], $estado = [], $accion = 0)
 
 function getAction($table = [], $estado = [], $factorDescuento)
 {
-    if (rand(0,1) < $factorDescuento) {
-        $accion = rand(0,3);
+    if (rand(0, 1) < $factorDescuento) {
+        $accion = rand(0, 3);
         return $accion;
     } else {
         if (!empty($table[$estado["y"]][$estado["x"]])) {
@@ -200,4 +200,10 @@ function printGrid($grid)
         echo "\n";
     }
     echo "\n";
+}
+
+function linspace($initial, $final, $cantidad)
+{
+    $step = ($final - $initial) / ($cantidad - 1);
+    return range($initial, $final, $step);
 }
