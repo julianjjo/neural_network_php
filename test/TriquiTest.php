@@ -1,9 +1,7 @@
 <?php
 require __DIR__ . '/../triquiUtils.php';
 
-use PHPUnit\Framework\TestCase;
-
-class TriquiTest extends TestCase
+class TriquiTest extends PHPUnit_Framework_TestCase
 {
     public function testValidateVerticalTrue()
     {
@@ -127,5 +125,17 @@ class TriquiTest extends TestCase
     {
         $result = esEmpate([0, 0, 0, 0, 0, 0, 0, 0, 0]);
         $this->assertFalse($result, "El resultado deberia ser true");
+    }
+
+    public function testGetMovimientosVacios()
+    {
+        $result = getMovimientosVacios([1, 0, -1, 0, 0, 1, 1, 0, 0]);
+        $this->assertEquals([1,3,4,7,8], $result, "Deberia devolver las llaves de los movimientos vacios");
+    }
+
+    public function testMinimax()
+    {
+        $result = minimax([-1, 1, -1, 0, 1, 0, 0, 0, 0], $player = 1);
+        $this->assertEquals(3, $result["index"], "Deberia devolver las llaves de los movimientos vacios");
     }
 }
