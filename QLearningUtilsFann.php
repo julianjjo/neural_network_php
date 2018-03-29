@@ -15,6 +15,52 @@ function getTable($grid, $acciones)
     return $table;
 }
 
+function getGridNumeric($grid = []){
+    $numericGrid = array();
+    foreach ($grid as $x => $valuex) {
+        foreach ($valuex as $y => $valuey) {
+            if ($grid[$x][$y] == "v") {
+                $numericGrid[$x][$y] = 0;
+            } elseif ($grid[$x][$y] == "j") {
+                $numericGrid[$x][$y] = 1;
+            } elseif ($grid[$x][$y] == "T") {
+                $numericGrid[$x][$y] = 2;
+            }  elseif ($grid[$x][$y] == "f") {
+                $numericGrid[$x][$y] = -1;
+            }
+        }
+    }
+    return $numericGrid;
+}
+
+function gridNumericToVector($numericGrid = []){
+    $vectorGrid = array();
+    foreach ($numericGrid as $x => $valuex) {
+        foreach ($valuex as $y => $valuey) {
+            $vectorGrid[] = $valuey;
+        }
+    }
+    return $vectorGrid;
+}
+
+function getGridLetters($numericGrid = []){
+    $grid = array();
+    foreach ($numericGrid as $x => $valuex) {
+        foreach ($valuex as $y => $valuey) {
+            if ($numericGrid[$x][$y] == 0) {
+                $grid[$x][$y] = "v";
+            } elseif ($numericGrid[$x][$y] == 1) {
+                $grid[$x][$y] = "j";
+            } elseif ($numericGrid[$x][$y] == 2) {
+                $grid[$x][$y] = "T";
+            }  elseif ($numericGrid[$x][$y] == -1) {
+                $grid[$x][$y] = "f";
+            }
+        }
+    }
+    return $grid;
+}
+
 function getRecompensa($grid = [], $estado = [], $accion = 0)
 {
     $reward = -1;
@@ -84,7 +130,7 @@ function nuevaPosicion($grid = [], $estado = [], $accion = 0)
     return $grid;
 }
 
-function validarTeminado($grid = [], $estado = [], $accion = 0)
+function validarTerminado($grid = [], $estado = [], $accion = 0)
 {
     if ($accion == 0) {
         if (!empty($grid[$estado["y"]][$estado["x"] - 1])) {
@@ -151,12 +197,31 @@ function getNuevoEstado($grid = [], $estado = [], $accion = 0)
 
 function actuar($grid = [], $estado = [], $accion = 0)
 {
-    $values["done"] = validarTeminado($grid, $estado, $accion);
+    $values["done"] = validarTerminado($grid, $estado, $accion);
     $values["recompensa"] = getRecompensa($grid, $estado, $accion);
     $values["nueva_grilla"] = nuevaPosicion($grid, $estado, $accion);
     $values["nuevo_estado"] = getNuevoEstado($grid, $estado, $accion);
     return $values;
 }
+
+// function getAction($ann, $acciones, $numericVectorGrid, $factorDescuento)
+// {
+//     $randomFloat = rand(0, 100) / 100;
+//     if ($randomFloat < $factorDescuento) {
+//         $accion = rand(0, 3);
+//         return $accion;
+//     } else {
+//         foreach ($acciones as $accion => $nombre) {
+//             $input = $numericVectorGrid;
+//             $input[] = $accion;
+//             $output = fann_run($ann, $input);
+//             $q_value = getQValue($output);
+//             $table[$accion] = $q_value;
+//         }
+//         $accion = array_search(max($table), $table);
+//         return $accion;
+//     }
+// }
 
 function getAction($table = [], $estado = [], $factorDescuento)
 {
@@ -172,21 +237,46 @@ function getAction($table = [], $estado = [], $factorDescuento)
     }
 }
 
-function getActionPredict($table = [], $estado = [])
+function getActionPredict($ann, $numericVectorGrid, $acciones)
 {
-    if (isset($table[$estado["y"]][$estado["x"]])) {
-        $accion = array_search(max($table[$estado["y"]][$estado["x"]]), $table[$estado["y"]][$estado["x"]]);
-        return $accion;
+    foreach ($acciones as $accion => $nombre) {
+        $input = $numericVectorGrid;
+        $input[] = $accion;
+        $output = fann_run($ann, $input);
+        $q_value = getQValue($output);
+        $table[$accion] = $q_value;
     }
+    $accion = array_search(max($table), $table);
+    return $accion;
 }
 
-function maxRefuerzo($table, $grid, $nuevo_estado)
+function getActionMax($table = [])
 {
-    if (isset($table[$nuevo_estado["y"]][$nuevo_estado["x"]])) {
-        $accion = array_search(max($table[$nuevo_estado["y"]][$nuevo_estado["x"]]), $table[$nuevo_estado["y"]][$nuevo_estado["x"]]);
-        return getRecompensa($grid, $nuevo_estado, $accion);
-    }
+    $accion = array_search(max($table), $table);
+    return $accion;
 }
+
+function getOuputs($q_value){
+    $output[0] = 0;
+    $output[1] = 0;
+    if($q_value < 0){
+        $output[1] = abs($q_value);
+    } else{
+        $output[0] = $q_value;
+    }
+    return $output;
+}
+
+function getQValue($output){
+    $key = array_search(max($output), $output);
+    if($key == 1){
+        $q_value = $output[$key] * -1;
+    } else {
+        $q_value = $output[$key];
+    }
+    return $q_value;
+}
+
 
 function printGrid($grid)
 {
