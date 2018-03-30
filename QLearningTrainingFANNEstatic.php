@@ -6,29 +6,39 @@ $minLearningRate = 0.1;
 $maxLearningRate = 1.0;
 $factorDescuento = 0.7;
 $ephilon = 0.5;
-$episodios = 300000;
-$max_episodio_estados = 62;
-$grid[] = ["j", "v", "f", "v", "v", "f", "v"];
-$grid[] = ["v", "v", "v", "f", "v", "v", "v"];
-$grid[] = ["v", "v", "v", "v", "v", "f", "v"];
-$grid[] = ["v", "v", "f", "v", "v", "f", "v"];
-$grid[] = ["v", "v", "v", "v", "v", "f", "v"];
-$grid[] = ["v", "f", "v", "v", "v", "v", "v"];
-$grid[] = ["v", "v", "f", "f", "v", "v", "v"];
-$grid[] = ["v", "f", "T", "v", "v", "v", "v"];
-$grid[] = ["f", "v", "v", "v", "v", "f", "f"];
-$initalGrid = $grid;
-$num_layers = 3;
-$ann = fann_create_standard_array($num_layers, $layers = [64, 64, 2]);
+$episodiosQLearning = 150000;
+$episodiosNeuralNetwork = 20000;
+$max_episodio_estados = 84;
+
+$grid[] = ["v", "v", "v", "v", "v"];
+$grid[] = ["v", "v", "v", "v", "v"];
+$grid[] = ["v", "v", "v", "v", "v"];
+$grid[] = ["v", "v", "v", "v", "v"];
+$grid[] = ["v", "v", "v", "v", "v"];
+$grid[] = ["v", "v", "v", "v", "v"];
+$grid[] = ["v", "v", "v", "v", "v"];
+while (true) {
+    $grid = generarLaberintoAleatorio($grid);
+    $initalGrid = $grid;
+    printGrid($grid);
+    $line = readline("Continuar: ");
+    if($line == "y"){
+        break;
+    }
+}
+$fp = fopen('GridGenerate.json', 'w');
+fwrite($fp, json_encode($grid));
+fclose($fp);
+$num_layers = 4;
+$ann = fann_create_standard_array($num_layers, $layers = [36, 30, 18, 2]);
 srand(250);
-$learningRate = linspace($minLearningRate, $maxLearningRate, $episodios);
+$learningRate = linspace($minLearningRate, $maxLearningRate, $episodiosQLearning);
 $table = getTable($grid);
 $maxRecompensa = -3000;
 
-for ($episodio = 0; $episodio < $episodios; $episodio++) {
+for ($episodio = 0; $episodio < $episodiosQLearning; $episodio++) {
     $grid = $initalGrid;
-    $estado["x"] = 0;
-    $estado["y"] = 0;
+    $estado = getPosicionJugador($grid);
     $recompensaEpisodio = 0;
     for ($i = 0; $i < $max_episodio_estados; $i++) {
         $action = getAction($table, $estado, $factorDescuento);
@@ -53,15 +63,11 @@ for ($episodio = 0; $episodio < $episodios; $episodio++) {
     }
 }
 system("clear");
-var_dump($table);
-sleep(1);
 echo "Entrenamiento Red Neuronal";
-$episodios = 1000000;
-
-for ($episodio = 0; $episodio < $episodios; $episodio++) {
+sleep(1);
+for ($episodio = 0; $episodio < $episodiosNeuralNetwork; $episodio++) {
     $grid = $initalGrid;
-    $estado["x"] = 0;
-    $estado["y"] = 0;
+    $estado = getPosicionJugador($grid);
     $recompensaEpisodio = 0;
     for ($i = 0; $i < $max_episodio_estados; $i++) {
         $action = getAction($table, $estado, $factorDescuento);

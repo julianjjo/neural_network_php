@@ -5,17 +5,66 @@ $acciones = ["atras", "adelante", "arriba", "abajo"];
 $minLearningRate = 0.1;
 $maxLearningRate = 1.0;
 $factorDescuento = 0.8;
-$episodios = 300000;
+$episodios = 150000;
 $max_episodio_estados = 50;
-$grid[] = ["j", "v", "f", "v", "v", "f", "v"];
-$grid[] = ["v", "v", "v", "f", "v", "v", "v"];
-$grid[] = ["v", "v", "v", "v", "v", "f", "v"];
-$grid[] = ["v", "v", "f", "v", "v", "f", "v"];
-$grid[] = ["v", "v", "v", "v", "v", "f", "v"];
-$grid[] = ["v", "f", "v", "v", "v", "v", "v"];
-$grid[] = ["v", "v", "f", "f", "v", "v", "v"];
-$grid[] = ["v", "f", "T", "v", "v", "v", "v"];
-$grid[] = ["f", "v", "v", "v", "v", "f", "f"];
+$grid = array (
+  0 =>
+  array (
+    0 => 'T',
+    1 => 'v',
+    2 => 'f',
+    3 => 'v',
+    4 => 'v',
+  ),
+  1 =>
+  array (
+    0 => 'f',
+    1 => 'v',
+    2 => 'v',
+    3 => 'v',
+    4 => 'v',
+  ),
+  2 =>
+  array (
+    0 => 'f',
+    1 => 'f',
+    2 => 'f',
+    3 => 'f',
+    4 => 'v',
+  ),
+  3 =>
+  array (
+    0 => 'f',
+    1 => 'f',
+    2 => 'f',
+    3 => 'f',
+    4 => 'v',
+  ),
+  4 =>
+  array (
+    0 => 'f',
+    1 => 'v',
+    2 => 'v',
+    3 => 'j',
+    4 => 'v',
+  ),
+  5 =>
+  array (
+    0 => 'v',
+    1 => 'v',
+    2 => 'v',
+    3 => 'v',
+    4 => 'f',
+  ),
+  6 =>
+  array (
+    0 => 'v',
+    1 => 'v',
+    2 => 'v',
+    3 => 'v',
+    4 => 'f',
+  ),
+);
 $initalGrid = $grid;
 srand(250);
 
@@ -28,8 +77,7 @@ for ($episodio = 0; $episodio < $episodios; $episodio++) {
     // system("clear");
     // printGrid($grid);
     // usleep(50000);
-    $estado["x"] = 0;
-    $estado["y"] = 0;
+    $estado = getPosicionJugador($grid);
     $recompensaEpisodio = 0;
     for ($i = 0; $i < $max_episodio_estados; $i++) {
         $action = getAction($table, $estado, $factorDescuento);

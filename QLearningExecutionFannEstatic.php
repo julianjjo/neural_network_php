@@ -2,17 +2,10 @@
 require 'QLearningUtilsFann.php';
 
 $acciones = ["atras", "adelante", "arriba", "abajo"];
-$max_episodio_estados = 40;
-$grid[] = ["v", "v", "v", "v", "v"];
-$grid[] = ["v", "v", "v", "v", "v"];
-$grid[] = ["v", "v", "v", "v", "v"];
-$grid[] = ["v", "v", "v", "v", "v"];
-$grid[] = ["v", "v", "v", "v", "v"];
-$grid[] = ["v", "v", "v", "v", "v"];
-$grid[] = ["v", "v", "v", "v", "v"];
-$grid = generarLaberintoAleatorio($grid);
+$max_episodio_estados = 84;
+$fichero = file_get_contents('./GridGenerate.json', true);
+$grid = json_decode($fichero);
 $initalGrid = $grid;
-printGrid($grid);
 $ann = fann_create_from_file ("QLearning.net");
 echo "--------------Prueba IA--------------- \n\n\n";
 $grid = $initalGrid;

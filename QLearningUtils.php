@@ -204,3 +204,19 @@ function linspace($initial, $final, $cantidad)
     $step = ($final - $initial) / ($cantidad - 1);
     return range($initial, $final, $step);
 }
+
+function getPosicionJugador($grid)
+{
+    $post["x"] = 0;
+    $post["y"] = 0;
+    foreach ($grid as $keyY => $valueY) {
+        foreach ($valueY as $keyX => $valueX) {
+            if ($grid[$keyY][$keyX] === "j") {
+                $post["x"] = $keyX;
+                $post["y"] = $keyY;
+                return $post;
+            }
+        }
+    }
+    return $post;
+}

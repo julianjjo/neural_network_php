@@ -15,7 +15,8 @@ function getTable($grid, $acciones)
     return $table;
 }
 
-function getGridNumeric($grid = []){
+function getGridNumeric($grid = [])
+{
     $numericGrid = array();
     foreach ($grid as $x => $valuex) {
         foreach ($valuex as $y => $valuey) {
@@ -25,7 +26,7 @@ function getGridNumeric($grid = []){
                 $numericGrid[$x][$y] = 1;
             } elseif ($grid[$x][$y] == "T") {
                 $numericGrid[$x][$y] = 2;
-            }  elseif ($grid[$x][$y] == "f") {
+            } elseif ($grid[$x][$y] == "f") {
                 $numericGrid[$x][$y] = -1;
             }
         }
@@ -33,7 +34,8 @@ function getGridNumeric($grid = []){
     return $numericGrid;
 }
 
-function gridNumericToVector($numericGrid = []){
+function gridNumericToVector($numericGrid = [])
+{
     $vectorGrid = array();
     foreach ($numericGrid as $x => $valuex) {
         foreach ($valuex as $y => $valuey) {
@@ -43,7 +45,8 @@ function gridNumericToVector($numericGrid = []){
     return $vectorGrid;
 }
 
-function getGridLetters($numericGrid = []){
+function getGridLetters($numericGrid = [])
+{
     $grid = array();
     foreach ($numericGrid as $x => $valuex) {
         foreach ($valuex as $y => $valuey) {
@@ -53,7 +56,7 @@ function getGridLetters($numericGrid = []){
                 $grid[$x][$y] = "j";
             } elseif ($numericGrid[$x][$y] == 2) {
                 $grid[$x][$y] = "T";
-            }  elseif ($numericGrid[$x][$y] == -1) {
+            } elseif ($numericGrid[$x][$y] == -1) {
                 $grid[$x][$y] = "f";
             }
         }
@@ -256,20 +259,22 @@ function getActionMax($table = [])
     return $accion;
 }
 
-function getOuputs($q_value){
+function getOuputs($q_value)
+{
     $output[0] = 0;
     $output[1] = 0;
-    if($q_value < 0){
+    if ($q_value < 0) {
         $output[1] = abs($q_value);
-    } else{
+    } else {
         $output[0] = $q_value;
     }
     return $output;
 }
 
-function getQValue($output){
+function getQValue($output)
+{
     $key = array_search(max($output), $output);
-    if($key == 1){
+    if ($key == 1) {
         $q_value = $output[$key] * -1;
     } else {
         $q_value = $output[$key];
@@ -277,6 +282,178 @@ function getQValue($output){
     return $q_value;
 }
 
+function generarLaberintoAleatorio($grid)
+{
+    $gridGenerado = generarLaberintoVacio($grid);
+    $gridGenerado = getJugadoryTesoro($gridGenerado);
+    $post = getPosicionJugador($gridGenerado);
+    $gridGenerado = generarCamino($gridGenerado, $post);
+    if (existenEspaciosVacios($gridGenerado) !== false) {
+        $gridGenerado = getObstaculos($gridGenerado);
+        $gridGenerado = completarEspaciosVacios($gridGenerado);
+    }
+
+    return $gridGenerado;
+}
+
+function generarLaberintoVacio($grid)
+{
+    $gridVacio = array_map(
+        function ($val) {
+            foreach ($val as $key => $value) {
+                $val[$key] = 1;
+            }
+            return $val;
+        },
+        $grid
+    );
+    return $gridVacio;
+}
+
+function getJugadoryTesoro($grid)
+{
+    $tamanoY = count($grid);
+    $tamanoX = count($grid[0]);
+    while (true) {
+        $keyY = rand(0, ($tamanoY - 1));
+        $keyX = rand(0, ($tamanoX - 1));
+        if ($grid[$keyY][$keyX] == 1) {
+            $grid[$keyY][$keyX] = "j";
+            break;
+        }
+    }
+
+    while (true) {
+        $keyY = rand(0, ($tamanoY - 1));
+        $keyX = rand(0, ($tamanoX - 1));
+        if ($grid[$keyY][$keyX] == 1) {
+            $grid[$keyY][$keyX] = "T";
+            break;
+        }
+    }
+    return $grid;
+}
+
+function getPosicionJugador($grid)
+{
+    $post["x"] = 0;
+    $post["y"] = 0;
+    foreach ($grid as $keyY => $valueY) {
+        foreach ($valueY as $keyX => $valueX) {
+            if ($grid[$keyY][$keyX] === "j") {
+                $post["x"] = $keyX;
+                $post["y"] = $keyY;
+                return $post;
+            }
+        }
+    }
+    return $post;
+}
+
+function getEstadoValidoConAccionAleatoria($grid = [], $estado = [])
+{
+    $action = rand(0, 3);
+    if ($action === 0) {
+        if (!empty($grid[$estado["y"]][($estado["x"] - 1)])) {
+            $estado["x"] -= 1;
+        } elseif (!empty($grid[$estado["y"]][($estado["x"] + 1)])) {
+            $estado["x"] += 1;
+        } elseif (!empty($grid[($estado["y"] - 1)][$estado["x"]])) {
+            $estado["y"] -= 1;
+        } elseif (!empty($grid[($estado["y"] + 1)][$estado["x"]])) {
+            $estado["y"] += 1;
+        }
+    } elseif ($action === 1) {
+        if (!empty($grid[$estado["y"]][($estado["x"] + 1)])) {
+            $estado["x"] += 1;
+        } elseif (!empty($grid[($estado["y"] - 1)][$estado["x"]])) {
+            $estado["y"] -= 1;
+        } elseif (!empty($grid[($estado["y"] + 1)][$estado["x"]])) {
+            $estado["y"] += 1;
+        } elseif (!empty($grid[$estado["y"]][($estado["x"] -= 1)])) {
+            $estado["x"] -= 1;
+        }
+    } elseif ($action === 2) {
+        if (!empty($grid[($estado["y"] - 1)][$estado["x"]])) {
+            $estado["y"] -= 1;
+        } elseif (!empty($grid[$estado["y"]][($estado["x"] + 1)])) {
+            $estado["x"] += 1;
+        } elseif (!empty($grid[$estado["y"]][($estado["x"] - 1)])) {
+            $estado["x"] -= 1;
+        } elseif (!empty($grid[($estado["y"] + 1)][$estado["x"]])) {
+            $estado["y"] += 1;
+        }
+    } elseif ($action === 3)  {
+        if (!empty($grid[($estado["y"] + 1)][$estado["x"]])) {
+            $estado["y"] += 1;
+        } elseif (!empty($grid[$estado["y"]][($estado["x"] + 1)])) {
+            $estado["x"] += 1;
+        } elseif (!empty($grid[$estado["y"]][($estado["x"] - 1)])) {
+            $estado["x"] -= 1;
+        } elseif (!empty($grid[($estado["y"] - 1)][$estado["x"]])) {
+            $estado["y"] -= 1;
+        }
+    }
+    return $estado;
+}
+
+function generarCamino($grid, $estado = [])
+{
+    $estado = getEstadoValidoConAccionAleatoria($grid, $estado);
+    if ($grid[$estado["y"]][$estado["x"]] === "T") {
+        return $grid;
+    } else {
+        if ($grid[$estado["y"]][$estado["x"]] === 1) {
+            $grid[$estado["y"]][$estado["x"]] = "v";
+            $grid = generarCamino($grid, $estado);
+        } else {
+            $grid = generarCamino($grid, $estado);
+        }
+    }
+    return $grid;
+}
+
+function getObstaculos($grid, $estado = array('x' => 0, 'y' => 0))
+{
+    $prevEstado = $estado;
+    $estado = getEstadoValidoConAccionAleatoria($grid, $estado);
+    if($estado == $prevEstado){
+        return $grid;
+    }
+    if ($grid[$estado["y"]][$estado["x"]] === "T") {
+        return $grid;
+    } else {
+        if ($grid[$estado["y"]][$estado["x"]] === 1) {
+            $grid[$estado["y"]][$estado["x"]] = "f";
+            $grid = getObstaculos($grid, $estado);
+        } else {
+            $grid = getObstaculos($grid, $estado);
+        }
+    }
+    return $grid;
+}
+
+function completarEspaciosVacios($grid){
+    foreach ($grid as $keyY => $valueY) {
+        foreach ($valueY as $keyX => $valueX) {
+            if ($valueX === 1) {
+                $grid[$keyY][$keyX] = "v";
+            }
+        }
+    }
+    return $grid;
+}
+
+function existenEspaciosVacios($grid){
+    foreach ($grid as $keyY => $valueY) {
+        foreach ($valueY as $keyX => $valueX) {
+            if ($valueX === 1) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 function printGrid($grid)
 {
