@@ -17,10 +17,9 @@ usleep(200000);
 for ($i = 0; $i < $max_episodio_estados; $i++) {
     $action = getActionPredict($ann, $numericVectorGrid, $acciones);
     $values = actuar($grid, $estado, $action);
-    $grid = $values["nueva_grilla"];
+    $grid = getNewGrid($initalGrid, $estado,  $values["nuevo_estado"]["x"], $values["nuevo_estado"]["y"]);
     $estado = $values["nuevo_estado"];
     $numericVectorGrid = gridNumericToVector(getGridNumeric($grid));
-    system("clear");
     printGrid($grid);
     usleep(200000);
     if ($values["done"]) {

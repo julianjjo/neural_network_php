@@ -10,15 +10,15 @@ $max_episodio_estados = 50;
 $grid = array (
   0 =>
   array (
-    0 => 'T',
+    0 => 'v',
     1 => 'v',
-    2 => 'f',
+    2 => 'v',
     3 => 'v',
     4 => 'v',
   ),
   1 =>
   array (
-    0 => 'f',
+    0 => 'v',
     1 => 'v',
     2 => 'v',
     3 => 'v',
@@ -28,8 +28,8 @@ $grid = array (
   array (
     0 => 'f',
     1 => 'f',
-    2 => 'f',
-    3 => 'f',
+    2 => 'T',
+    3 => 'v',
     4 => 'v',
   ),
   3 =>
@@ -43,18 +43,18 @@ $grid = array (
   4 =>
   array (
     0 => 'f',
-    1 => 'v',
-    2 => 'v',
-    3 => 'j',
+    1 => 'f',
+    2 => 'f',
+    3 => 'f',
     4 => 'v',
   ),
   5 =>
   array (
-    0 => 'v',
-    1 => 'v',
+    0 => 'f',
+    1 => 'j',
     2 => 'v',
     3 => 'v',
-    4 => 'f',
+    4 => 'v',
   ),
   6 =>
   array (
@@ -62,7 +62,7 @@ $grid = array (
     1 => 'v',
     2 => 'v',
     3 => 'v',
-    4 => 'f',
+    4 => 'v',
   ),
 );
 $initalGrid = $grid;
@@ -87,7 +87,7 @@ for ($episodio = 0; $episodio < $episodios; $episodio++) {
         } else {
             $table[$estado["y"]][$estado["x"]][$action] += $learningRate[$episodio] * ($values["recompensa"] + $factorDescuento * max($table[$values["nuevo_estado"]["y"]][$values["nuevo_estado"]["x"]]) - $table[$estado["y"]][$estado["x"]][$action]);
         }
-        $grid = $values["nueva_grilla"];
+        $grid = getNewGrid($initalGrid, $estado,  $values["nuevo_estado"]["x"], $values["nuevo_estado"]["y"]);
         $estado = $values["nuevo_estado"];
         // system("clear");
         // printGrid($grid);

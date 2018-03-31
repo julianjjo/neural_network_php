@@ -249,6 +249,7 @@ function getActionPredict($ann, $numericVectorGrid, $acciones)
         $q_value = getQValue($output);
         $table[$accion] = $q_value;
     }
+    var_dump($table);
     $accion = array_search(max($table), $table);
     return $accion;
 }
@@ -470,4 +471,11 @@ function linspace($initial, $final, $cantidad)
 {
     $step = ($final - $initial) / ($cantidad - 1);
     return range($initial, $final, $step);
+}
+
+function getNewGrid($grid = [], $estado = [], $nuevoEstadoX, $nuevoEstadoY)
+{
+    $grid[$estado["y"]][$estado["x"]] = "v";
+    $grid[$nuevoEstadoY][$nuevoEstadoX] = "j";
+    return $grid;
 }

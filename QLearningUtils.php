@@ -220,3 +220,10 @@ function getPosicionJugador($grid)
     }
     return $post;
 }
+
+function getNewGrid($grid = [], $estado = [], $nuevoEstadoX, $nuevoEstadoY)
+{
+    $grid[$estado["y"]][$estado["x"]] = "v";
+    $grid[$nuevoEstadoY][$nuevoEstadoX] = "j";
+    return $grid;
+}
