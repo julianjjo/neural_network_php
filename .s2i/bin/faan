@@ -1,0 +1,2 @@
+### Install Fann
+pecl install fann
